@@ -4,13 +4,13 @@ import scrapy
 
 class BooksSpider(scrapy.Spider):
     name = "books"
-    allowed_domains = ["books.toscrape.com"]
+    allowed_domains = ["thomsonlocal.com"]
     start_urls = [
-        'http://books.toscrape.com/',
+        'https://www.thomsonlocal.com/search/relaxation/london',
     ]
 
     def parse(self, response):
-        for book_url in response.css("article.product_pod > h3 > a ::attr(href)").extract():
+        for book_url in response.css("li.listing > ul > .infoLink > div > a ::attr(href)").extract():
             yield scrapy.Request(response.urljoin(book_url), callback=self.parse_book_page)
         next_page = response.css("li.next > a ::attr(href)").extract_first()
         if next_page:
@@ -18,8 +18,11 @@ class BooksSpider(scrapy.Spider):
 
     def parse_book_page(self, response):
         item = {}
-        product = response.css("div.product_main")
-        item["title"] = product.css("h1 ::text").extract_first()
+        product = response.css("div.branchDetails")
+        item["title"] = product.css("h1.listingName ::text").extract_first()
+        item["phone"] = product.css("li.phoneNumber > div > p ::text").extract_first()
+        item["web"] = product.css("a.webpageButton ::attr(href)").extract_first()
+        item["where"] = product.css('.address > span ::text').getall()
         item['category'] = response.xpath(
             "//ul[@class='breadcrumb']/li[@class='active']/preceding-sibling::li[1]/a/text()"
         ).extract_first()
