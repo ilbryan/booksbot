@@ -6,7 +6,7 @@ class BooksSpider(scrapy.Spider):
     name = "books"
     allowed_domains = ["treatwell.co.uk"]
     start_urls = [
-        'https://www.treatwell.co.uk/places/treatment-chinese-massage/offer-type-local/in-london-uk/',
+        'https://www.treatwell.co.uk/places/treatment-herbal-medicine-and-supplements/offer-type-local/in-london-uk/',
     ]
 
     def parse(self, response):
